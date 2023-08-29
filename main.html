@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Scrollable List and Table Layout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(180deg, gray 0%, #ffc 100%);
+      /* background-image: url("design-concept-electronic-circuit-boards_49459-552.avif"); */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    button {
+      color: black;
+      background-color: white;
+      display: inline-flex;
+      height: 32px;
+      padding: 8px 16px;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      border-radius: 32px;
+      border: 1px solid var(--primary-200, #dfd9e7);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      background-color: transparent;
+      color: gray;
+    }
+
+    button:not(:disabled):hover {
+      cursor: pointer;
+      background: var(--primary-50, #f3f5f8);
+      box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 30px 0;
+      color: var(--primary-800, #1c1c1c);
+      /* Prime - Web/Headline 2 */
+      font-size: 20px;
+      font-family: Inter;
+      font-weight: 600;
+      line-height: 28px;
+    }
+
+    .container {
+      display: flex;
+      /* flex-direction: column; */
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+
+      padding: 30px;
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px 0px rgba(0, 0, 0, 0.07);
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 0;
+      min-width: 300px;
+      max-height: 600px;
+    }
+
+    .right {
+      padding-left: 40px;
+    }
+
+    .list {
+      width: 100%;
+      overflow-y: auto;
+    }
+
+    .list-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .list-title svg {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .list-title svg:hover {
+      transform: scale(1.1);
+    }
+
+    .list ul {
+      cursor: pointer;
+      margin-bottom: 10px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-state-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-state-item p {
+      margin: 0;
+    }
+
+    .list-state-item svg {
+      transition: all 0.2s ease;
+    }
+
+    .list-state-item svg:hover {
+      transform: scale(1.1);
+    }
+
+    .list ul.selected {
+      border: 2px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .list li {
+      margin-bottom: 10px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 5px;
+      width: 100%;
+    }
+
+    td {
+      margin: 3px;
+      padding: 3px;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      background-color: #ccc;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      color: #444;
+      text-transform: uppercase;
+      transition: background-color 0.3s;
+    }
+
+    td:hover {
+      background-color: #f0f0f0;
+    }
+
+    .inputs-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .inputs-container button {
+      margin-left: auto;
+      align-self: flex-end;
+      margin-bottom: 6px;
+    }
+
+    .inputs-container input {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .input-wrapper {
+      margin-right: 8px;
+    }
+
+    .input-wrapper input {
+      width: 120px;
+    }
+
+    .input-wrapper label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      margin-bottom: 8px;
+    }
+
+    input[type="color"] {
+      height: 40px;
+      margin: 0;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .icons {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Additional styling for the icons if needed */
+    .delete-icon,
+    .icons img {
+      margin-right: 10px;
+      /* Add margin between the icons */
+    }
+
+    .hover-effect {
+      transition: transform 0.3s;
+    }
+
+    .hover-effect:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="list-title">
+        <h2>States</h2>
+        <svg id="download" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M18 15V18H6V15H4V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V15H18ZM17 11L15.59 9.59L13 12.17V4H11V12.17L8.41 9.59L7 11L12 16L17 11Z"
+            fill="#272142" />
+        </svg>
+      </div>
+
+      <div class="list"></div>
+    </div>
+    <div class="right">
+      <div class="table">
+        <h2>Configurator</h2>
+
+        <div class="inputs-container">
+          <div class="input-wrapper">
+            <label for="color-picker">Color</label>
+            <input type="color" value="#f6b73c" id="color-picker" />
+          </div>
+          <div class="input-wrapper">
+            <label for="time-input">Milieconds</label>
+            <input id="time-input" type="number" min="0" max="60" step="1" value="1" />
+          </div>
+          <button id="apply-button">Apply</button>
+        </div>
+        <table id="tabela">
+          <tr>
+            <td id="square-1"></td>
+            <td id="square-2"></td>
+            <td id="square-3"></td>
+            <td id="square-4"></td>
+            <td id="square-5"></td>
+            <td id="square-6"></td>
+            <td id="square-7"></td>
+            <td id="square-8"></td>
+          </tr>
+          <tr>
+            <td id="square-9"></td>
+            <td id="square-10"></td>
+            <td id="square-11"></td>
+            <td id="square-12"></td>
+            <td id="square-13"></td>
+            <td id="square-14"></td>
+            <td id="square-15"></td>
+            <td id="square-16"></td>
+          </tr>
+          <tr>
+            <td id="square-17"></td>
+            <td id="square-18"></td>
+            <td id="square-19"></td>
+            <td id="square-20"></td>
+            <td id="square-21"></td>
+            <td id="square-22"></td>
+            <td id="square-23"></td>
+            <td id="square-24"></td>
+          </tr>
+          <tr>
+            <td id="square-25"></td>
+            <td id="square-26"></td>
+            <td id="square-27"></td>
+            <td id="square-28"></td>
+            <td id="square-29"></td>
+            <td id="square-30"></td>
+            <td id="square-31"></td>
+            <td id="square-32"></td>
+          </tr>
+          <tr>
+            <td id="square-33"></td>
+            <td id="square-34"></td>
+            <td id="square-35"></td>
+            <td id="square-36"></td>
+            <td id="square-37"></td>
+            <td id="square-38"></td>
+            <td id="square-39"></td>
+            <td id="square-40"></td>
+          </tr>
+          <tr>
+            <td id="square-41"></td>
+            <td id="square-42"></td>
+            <td id="square-43"></td>
+            <td id="square-44"></td>
+            <td id="square-45"></td>
+            <td id="square-46"></td>
+            <td id="square-47"></td>
+            <td id="square-48"></td>
+          </tr>
+          <tr>
+            <td id="square-49"></td>
+            <td id="square-50"></td>
+            <td id="square-51"></td>
+            <td id="square-52"></td>
+            <td id="square-53"></td>
+            <td id="square-54"></td>
+            <td id="square-55"></td>
+            <td id="square-56"></td>
+          </tr>
+          <tr>
+            <td id="square-57"></td>
+            <td id="square-58"></td>
+            <td id="square-59"></td>
+            <td id="square-60"></td>
+            <td id="square-61"></td>
+            <td id="square-62"></td>
+            <td id="square-63"></td>
+            <td id="square-64"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="priority-queue.js"></script>
+  <script>
+    const colorPicker = document.getElementById("color-picker");
+    const timeInput = document.getElementById("time-input");
+    const applyButton = document.getElementById("apply-button");
+    const squares = document.querySelectorAll("td");
+    const savedStates = [];
+    let stateIdCounter = 1;
+    const downloadButton = document.getElementById("download");
+
+    applyButton.disabled = true;
+
+    // Function to apply the selected color and time to a square
+    function applyColorAndTime(square) {
+      const color = colorPicker.value;
+      const time = timeInput.value;
+
+      if (time !== "" && time != 0) {
+        square.style.backgroundColor = color;
+
+        const r = parseInt(color.substr(1, 2), 16);
+        const g = parseInt(color.substr(3, 2), 16);
+        const b = parseInt(color.substr(5, 2), 16);
+        const contrast = Math.round((r * 299 + g * 587 + b * 114) / 1000) >= 128 ? "black" : "white";
+
+        // Set the text color based on the contrast ratio
+        square.style.color = contrast;
+        square.innerText = time;
+      } else {
+        // Reset the square to the default value
+        square.style.backgroundColor = ""; // Reset the background color
+        square.style.color = ""; // Reset the text color
+        square.innerText = ""; // Reset the text content
+      }
+    }
+
+    // Loop through each square and add an event listener
+    squares.forEach((square) => {
+      square.addEventListener("click", () => {
+        applyColorAndTime(square);
+        if (document.querySelector('td[style*="background-color"]')) {
+          applyButton.disabled = false;
+        } else {
+          applyButton.disabled = true;
+        }
+      });
+    });
+
+    // Function to save the current state of the grid
+    function saveState() {
+      const listagenerala = document.querySelector(".list");
+      const listaul = listagenerala.querySelectorAll("ul");
+      let ok = false;
+      let idnumber = 0;
+
+      listaul.forEach((ul) => {
+        if (ul.getAttribute("class") === "selected") {
+          ok = true;
+          return;
+        }
+        if (ok === false) {
+          idnumber++;
+        }
+      });
+
+      const currentState = [];
+      const stateData = [];
+      squares.forEach((square) => {
+        const rowIndex = square.parentNode.rowIndex;
+        const colIndex = square.cellIndex;
+        const color = square.style.backgroundColor;
+        const time = square.innerText;
+        currentState.push([rowIndex, colIndex, color, time]);
+        stateData.push([color, time]);
+      });
+
+      if (ok === true) {
+        savedStates[idnumber] = stateData;
+        return;
+      } else savedStates.push(stateData);
+
+      // Create a new ul tag and append it to the saved states list
+      const ul = document.createElement("ul");
+      const stateId = `state-${stateIdCounter}`;
+      ul.setAttribute("id", stateId);
+      ul.setAttribute("data-index", savedStates.length - 1);
+      ul.innerHTML = `
+        <div class="list-state-item">
+          <p> state-${stateIdCounter} </p>
+          <div class="icons">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="delete-icon">
+              <path d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z" fill="#4F4E4E"/>
+            </svg>
+            <img src="chevron-up-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-up">
+            <img src="chevron-down-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-down">
+          </div>
+        </div>
+        `;
+
+      savedStatesList.appendChild(ul);
+
+      // Add an event listener to the list to restore the saved state
+      ul.addEventListener("click", (e) => {
+        if (ul.classList.contains("selected")) {
+          clearGrid();
+        } else {
+          const index = parseInt(ul.getAttribute("data-index"));
+          const state = savedStates[index];
+          restoreState(state);
+          selectState(stateId);
+        }
+      });
+
+      ul.querySelector(".delete-icon")?.addEventListener("click", (e) => {
+        e.stopPropagation(); // prevents the even from bubbling to the ul element "click" event
+        const index = Array.from(savedStatesList.children).indexOf(ul);
+        savedStates.splice(index - 1, 1);
+        savedStatesList.removeChild(ul);
+        resetGrid();
+        colorPicker.value = "#F6B73C";
+        timeInput.value = "1";
+      });
+
+      ul.querySelector(".hover-effect-up")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const uList = document.getElementsByClassName('list')[0];
+        const ulLists = document.getElementsByTagName('ul');
+        const ulElement = e.currentTarget.parentElement.parentElement.parentElement;
+        
+        if(ulElement && ulElement.previousElementSibling) {
+
+          const currentIndex = Array.from(ulLists).indexOf(ulElement);
+          const nextIndex  = currentIndex + 1;
+          uList.insertBefore(ulElement, ulElement.previousElementSibling);
+        }
+
+      });
+
+      ul.querySelector(".hover-effect-down")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const uList = document.getElementsByClassName('list')[0];
+        const ulLists = document.getElementsByTagName('ul');
+        const ulElement = e.currentTarget.parentElement.parentElement.parentElement;
+        
+        if(ulElement && ulElement.nextElementSibling) {
+
+          const currentIndex = Array.from(ulLists).indexOf(ulElement);
+          const nextIndex  = currentIndex + 1;
+          uList.insertBefore(ulElement.nextElementSibling, ulElement);
+        }
+
+      });
+
+      // Increment the state ID counter
+      stateIdCounter++;
+
+      resetGrid();
+      colorPicker.value = "#F6B73C";
+      timeInput.value = "1";
+      applyButton.disabled = true;
+    }
+
+    // Add an event listener to the apply button to save the state of the grid
+    applyButton.addEventListener("click", () => {
+      saveState();
+    });
+
+    // Function to restore a saved state of the grid
+    function restoreState(state) {
+      state.forEach((element, index) => {
+        color = element[0];
+        time = element[1];
+        rowIndex = Math.floor(index / 8);
+        colIndex = index % 8;
+        //const square = document.querySelector(`table tr:nth-child(${rowIndex + 1}) td:nth-child(${colIndex + 1})`);
+        const square = document.getElementById(`square-${index + 1}`);
+        square.style.backgroundColor = color;
+        const r = parseInt(color.substr(1, 2), 16);
+        const g = parseInt(color.substr(3, 2), 16);
+        const b = parseInt(color.substr(5, 2), 16);
+        const contrast = Math.round((r * 299 + g * 587 + b * 114) / 1000) >= 128 ? "black" : "white";
+        square.style.color = contrast;
+        square.innerText = time;
+      });
+    }
+
+    // Add an event listener to the saved states list to restore a saved state when clicked
+
+    const savedStatesList = document.querySelector(".list");
+    /*
+      savedStatesList.addEventListener('click', (event) => {
+          if (event.target.nodeName === 'BUTTON') {
+              const index = parseInt(button.getAttribute('data-index'));
+              const state = savedStates[index];
+              restoreState(state);
+          }
+      });*/
+
+    //APPLY BUTTON
+
+    // Add drag and drop functionality to the saved states list
+    let draggedState = null;
+
+    savedStatesList.addEventListener("dragstart", (event) => {
+      draggedState = event.target;
+      event.dataTransfer.setData("text/plain", draggedState.id);
+    });
+
+    savedStatesList.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+
+    savedStatesList.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const dropTarget = event.target.closest("div");
+      if (dropTarget && dropTarget !== draggedState) {
+        const dropTargetIndex = Array.from(savedStates.children).indexOf(dropTarget);
+        const draggedStateIndex = Array.from(savedStates.children).indexOf(draggedState);
+        if (dropTargetIndex > draggedStateIndex) {
+          dropTarget.after(draggedState);
+        } else {
+          dropTarget.before(draggedState);
+        }
+      }
+    });
+
+    function resetGrid() {
+      squares.forEach((square) => {
+        square.style.backgroundColor = "";
+        square.style.color = "";
+        square.innerText = "";
+      });
+    }
+
+    function disableApplyButton() {
+      applyButton.disabled = true;
+      squares.forEach((square) => {
+        square.addEventListener("click", () => {
+          if (square.style.backgroundColor !== "" && square.innerHTML !== "") {
+            applyButton.disabled = false;
+          } else {
+            applyButton.disabled = true;
+          }
+        });
+      });
+    }
+
+    disableApplyButton();
+    ///--------------------------
+    // variables to store the dragged element and its initial parent
+    let dragSrcEl = null;
+    let initialParent = null;
+
+    // function to handle the drag start event
+    function handleDragStart(e) {
+      dragSrcEl = this;
+      initialParent = this.parentNode;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/html", this.innerHTML);
+    }
+
+    // function to handle the drag over event
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = "move";
+      return false;
+    }
+
+    // function to handle the drop event
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      // check if the target is not the source
+      if (dragSrcEl !== this) {
+        // swap the innerHTML of the source and target elements
+        dragSrcEl.innerHTML = this.innerHTML;
+        this.innerHTML = e.dataTransfer.getData("text/html");
+      }
+      return false;
+    }
+
+    // function to handle the drag end event
+    function handleDragEnd(e) {
+      // reset the variables
+      dragSrcEl = null;
+      initialParent = null;
+    }
+
+    // attach the drag and drop event listeners to the table cells
+    const cells = document.querySelectorAll("#tabela td");
+    cells.forEach((cell) => {
+      cell.addEventListener("dragstart", handleDragStart, false);
+      cell.addEventListener("dragover", handleDragOver, false);
+      cell.addEventListener("drop", handleDrop, false);
+      cell.addEventListener("dragend", handleDragEnd, false);
+    });
+
+    // Function to clear the grid
+    function clearGrid() {
+      squares.forEach((square) => {
+        square.style.backgroundColor = "";
+        square.style.color = "";
+        square.innerText = "";
+      });
+      const ulList = document.getElementsByClassName("list")[0];
+      const selectedUl = document.querySelector("ul.selected");
+      selectedUl.classList.remove("selected");
+      applyButton.disabled = true;
+    }
+
+    function moveUp() {
+      const ulList = document.getElementsByClassName("list")[0];
+      const ulLists = document.getElementsByTagName("ul");
+      const selectedUl = document.querySelector("ul.selected");
+
+      if (selectedUl && selectedUl.previousElementSibling) {
+        const currentIndex = Array.from(ulLists).indexOf(selectedUl);
+        const previousIndex = currentIndex - 1;
+
+        // Swap the selected <ul> element with the previous <ul> element in the array
+        //[savedStates[currentIndex], savedStates[previousIndex]] = [savedStates[previousIndex], savedStates[currentIndex]];
+
+        ulList.insertBefore(selectedUl, selectedUl.previousElementSibling);
+      }
+    }
+
+    function moveDown() {
+      const ulList = document.getElementsByClassName("list")[0];
+      const ulLists = document.getElementsByTagName("ul");
+      const selectedUl = document.querySelector("ul.selected");
+
+      if (selectedUl && selectedUl.nextElementSibling) {
+        //const buttonUlSelected = selectedUl.getElementsByTagName('button');
+        //const buttonUlInterchange = selectedUl.nextElementSibling.getElementsByTagName('button');
+
+        const currentIndex = Array.from(ulLists).indexOf(selectedUl);
+        const nextIndex = currentIndex + 1;
+
+        // Swap the selected <ul> element with the next <ul> element in the array
+        //[savedStates[currentIndex], savedStates[nextIndex]] = [savedStates[nextIndex], savedStates[currentIndex]];
+
+        /*
+              const selectedButton = selectedUl.querySelector('button');
+              const nextButton = selectedUl.nextElementSibling.querySelector('button');
+ 
+              selectedButton.setAttribute('data-index', currentIndex.toString());
+              nextButton.setAttribute('data-index', nextIndex.toString());
+              */
+
+        ulList.insertBefore(selectedUl.nextElementSibling, selectedUl);
+      }
+    }
+
+    function selectState(stateId) {
+      const ulList = document.getElementsByClassName("list")[0];
+      const selectedUl = document.getElementById(stateId);
+
+      if (selectedUl) {
+        const currentSelectedUl = ulList.querySelector("ul.selected");
+
+        if (currentSelectedUl) currentSelectedUl.classList.remove("selected");
+        selectedUl.classList.add("selected");
+      }
+    }
+
+    downloadButton.addEventListener("click", downloadTextFile);
+
+    function downloadTextFile() {
+      function compare(element1, element2) {
+        return element1.time - element2.time;
+      }
+      const priorityQueue = new PriorityQueue({ comparator: compare });
+
+      var customText =
+        "#include<FastLED.h> \n\
+#define LED_PIN 6\n\
+#define NUM_LEDS 64\n\
+CRGB leds[NUM_LEDS];\n\
+void clearMatrix(){\n\
+for(int i = 0; i < NUM_LEDS; i++){\n\
+leds[i] = CRGB::Black;}\n\
+}\n\
+void setup(){\n\
+    FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);\n\
+    FastLED.setBrightness(50);\n\
+    clearMatrix();\n\
+    FastLED.show();\n\
+}\n\
+void loop() {\n \
+";
+
+      savedStates.forEach((state, index) => {
+        console.log(`State ${index}:`);
+        var counter = 0;
+        state.forEach((element, elementIndex) => {
+          const color = element[0];
+          const time = element[1];
+          // Extract the numerical values from the color
+          const colorValues = color.match(/\d+/g); // Extract numerical values using regex
+
+          if (colorValues && colorValues.length >= 3) {
+            const r = parseInt(colorValues[0], 10);
+            const g = parseInt(colorValues[1], 10);
+            const b = parseInt(colorValues[2], 10);
+
+            console.log(`Element ${elementIndex}: r=${r}, g=${g}, b=${b}, time=${time}`);
+
+            priorityQueue.queue({ colors: { r, g, b }, time, counter });
+
+            customText += `leds[${counter}] = CRGB(${r}, ${g}, ${b});\n`;
+          }
+          counter++;
+        });
+        customText += `FastLED.show();\n`;
+
+        console.log("------------------");
+
+        let previousTime = 0;
+        //const stoc = priorityQueue.dequeue();
+
+        //priorityQueue.queue(stoc);
+
+        while (priorityQueue.length) {
+          const element = priorityQueue.dequeue();
+
+          console.log(`${element.colors.r}, ${element.colors.g}, ${element.colors.b}`);
+
+          if (previousTime !== 0) {
+            const delay = element.time - previousTime;
+            customText += `delay(${delay});\n`;
+            customText += `leds[${element.counter}] = CRGB::Black;\n`;
+          } else {
+            customText += `delay(${element.time});\n`;
+            customText += `leds[${element.counter}] = CRGB::Black;\n`;
+          }
+          previousTime = element.time;
+        }
+      });
+
+      customText += `}`;
+      // Customize the content of the text file
+
+      // Create a Blob object from the content
+      const blob = new Blob([customText], { type: "text/plain" });
+
+      // Create a download link
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "LEDFile.ino";
+
+      // Simulate a click on the download link
+      downloadLink.click();
+
+      // Clean up
+      URL.revokeObjectURL(downloadLink.href);
+    }
+  </script>
+</body>
+
+</html>
