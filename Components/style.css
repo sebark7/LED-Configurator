@@ -1,0 +1,224 @@
+* {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(180deg, gray 0%, #ffc 100%);
+    /* background-image: url("design-concept-electronic-circuit-boards_49459-552.avif"); */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  button {
+    color: black;
+    background-color: white;
+    display: inline-flex;
+    height: 32px;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 32px;
+    border: 1px solid var(--primary-200, #dfd9e7);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    background-color: transparent;
+    color: gray;
+  }
+
+  button:not(:disabled):hover {
+    cursor: pointer;
+    background: var(--primary-50, #f3f5f8);
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.05);
+  }
+
+  h2 {
+    margin: 0 0 30px 0;
+    color: var(--primary-800, #1c1c1c);
+    /* Prime - Web/Headline 2 */
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  .container {
+    display: flex;
+    /* flex-direction: column; */
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 30px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px 0px rgba(0, 0, 0, 0.07);
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+    min-width: 300px;
+    max-height: 600px;
+  }
+
+  .right {
+    padding-left: 40px;
+  }
+
+  .list {
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .list-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .list-title svg {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .list-title svg:hover {
+    transform: scale(1.1);
+  }
+
+  .list ul {
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .list-state-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .list-state-item p {
+    margin: 0;
+  }
+
+  .list-state-item svg {
+    transition: all 0.2s ease;
+  }
+
+  .list-state-item svg:hover {
+    transform: scale(1.1);
+  }
+
+  .list ul.selected {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+  }
+
+  .list li {
+    margin-bottom: 10px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 5px;
+    width: 100%;
+  }
+
+  td {
+    margin: 3px;
+    padding: 3px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    background-color: #ccc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    color: #444;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+  }
+
+  td:hover {
+    background-color: #f0f0f0;
+  }
+
+  .inputs-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .inputs-container button {
+    margin-left: auto;
+    align-self: flex-end;
+    margin-bottom: 6px;
+  }
+
+  .inputs-container input {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
+
+  .input-wrapper {
+    margin-right: 8px;
+  }
+
+  .input-wrapper input {
+    width: 120px;
+  }
+
+  .input-wrapper label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin-bottom: 8px;
+  }
+
+  input[type="color"] {
+    height: 40px;
+    margin: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .icons {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Additional styling for the icons if needed */
+  .delete-icon,
+  .icons img {
+    margin-right: 10px;
+    /* Add margin between the icons */
+  }
+
+  .hover-effect {
+    transition: transform 0.3s;
+  }
+
+  .hover-effect:hover {
+    transform: scale(1.2);
+  }

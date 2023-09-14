@@ -442,8 +442,8 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="delete-icon">
               <path d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z" fill="#4F4E4E"/>
             </svg>
-            <img src="chevron-up-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-up">
-            <img src="chevron-down-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-down">
+            <img src="../Pictures/chevron-up-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-up">
+            <img src="../Pictures/chevron-down-svgrepo-com.svg" width="24" height="24" fill="none" class="hover-effect-down">
           </div>
         </div>
         `;
@@ -465,8 +465,9 @@
       ul.querySelector(".delete-icon")?.addEventListener("click", (e) => {
         e.stopPropagation(); // prevents the even from bubbling to the ul element "click" event
         const index = Array.from(savedStatesList.children).indexOf(ul);
-        savedStates.splice(index - 1, 1);
+        savedStates.splice(index, 1);
         savedStatesList.removeChild(ul);
+        updateIndexes(index);
         resetGrid();
         colorPicker.value = "#F6B73C";
         timeInput.value = "1";
@@ -480,10 +481,21 @@
         const ulElement = e.currentTarget.parentElement.parentElement.parentElement;
         
         if(ulElement && ulElement.previousElementSibling) {
-
+          
           const currentIndex = Array.from(ulLists).indexOf(ulElement);
           const nextIndex  = currentIndex + 1;
+
+          var el1, el2;
+          el1 = parseInt(ulElement.getAttribute("data-index"),10);
+          el2 = parseInt(ulElement.previousElementSibling.getAttribute("data-index"),10);
+          ulElement.setAttribute("data-index", el2);
+          ulElement.previousElementSibling.setAttribute("data-index", el1);
+
+
           uList.insertBefore(ulElement, ulElement.previousElementSibling);
+          [savedStates[currentIndex - 1], savedStates[currentIndex]] = [savedStates[currentIndex], savedStates[currentIndex - 1]];
+          //[parseInt(ulElement.getAttribute("data-index"),10), parseInt(ulElement.previousElementSibling.getAttribute("data-index"),10)] = 
+
         }
 
       });
@@ -499,7 +511,16 @@
 
           const currentIndex = Array.from(ulLists).indexOf(ulElement);
           const nextIndex  = currentIndex + 1;
+
+          var el1, el2;
+          el1 = parseInt(ulElement.getAttribute("data-index"),10);
+          el2 = parseInt(ulElement.nextElementSibling.getAttribute("data-index"),10);
+          ulElement.setAttribute("data-index", el2);
+          ulElement.nextElementSibling.setAttribute("data-index", el1);
+
           uList.insertBefore(ulElement.nextElementSibling, ulElement);
+          [savedStates[currentIndex + 1], savedStates[currentIndex]] = [savedStates[currentIndex], savedStates[currentIndex + 1]];
+
         }
 
       });
@@ -517,6 +538,19 @@
     applyButton.addEventListener("click", () => {
       saveState();
     });
+
+    function updateIndexes(indexReferinta)
+    {
+      var ulLists = document.getElementsByTagName('ul');
+      for (var index = 0; index < ulLists.length; index++) 
+      {
+        var indexUlCurent = parseInt(ulLists[index].getAttribute("data-index"), 10)
+        if(indexUlCurent > indexReferinta)
+        {
+          ulLists[index].setAttribute("data-index", indexUlCurent - 1);
+        }
+      }
+    }
 
     // Function to restore a saved state of the grid
     function restoreState(state) {
@@ -738,7 +772,7 @@ leds[i] = CRGB::Black;}\n\
 }\n\
 void setup(){\n\
     FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);\n\
-    FastLED.setBrightness(50);\n\
+    FastLED.setBrightness(20);\n\
     clearMatrix();\n\
     FastLED.show();\n\
 }\n\
